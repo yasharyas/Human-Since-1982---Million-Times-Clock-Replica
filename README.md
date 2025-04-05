@@ -1,5 +1,3 @@
-# _A Million Times (Personal Fork)_
-
 # A Million Times - Clock Animation
 
 This is a web based implementation of the **[A Million Times](https://www.humanssince1982.com/en-int)** clock animation project. Inspired by the original art installation by Humans Since 1982, this version runs a grid of animated clocks using WebGL and canvas to simulate beautiful formations, numbers, and transitions.
@@ -14,7 +12,7 @@ This is a web based implementation of the **[A Million Times](https://www.humans
 
 ## 🚀 Demo
 
-> _Insert a screenshot or GIF here if you want_
+
 **[Project Demo](https://yasharyas.github.io/Human-Since-1982---Million-Times-Clock-Replica/)**
   
 Runs locally at: `http://localhost:8080/`
@@ -87,13 +85,12 @@ const runners = [
 ## 🧠 Credits
 
 - Original concept by [Humans Since 1982](https://www.humanssince1982.com/)
-- Original repo by [malte-wessel](https://github.com/malte-wessel)
-- This fork modified and maintained by **Your Name**
+
 
 ## 📄 License
 
 MIT — feel free to use, fork, and modify.
-```
 
----
+
+
 
