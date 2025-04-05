@@ -1,16 +1,15 @@
 body {
     margin: 0;
-    background-color: #111;
+    background: #1e1e1e;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     height: 100vh;
   }
-
-canvas {
-background-color: #222;
-border-radius: 12px;
-box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
-display: block;
-    }
+  
+  canvas {
+    background-color: #1e1e1e;
+    box-shadow: 0 0 20px #00f6ff44;
+    border-radius: 10px;
+  }
   
