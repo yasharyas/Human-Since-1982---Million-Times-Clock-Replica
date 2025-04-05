@@ -9,6 +9,30 @@ const clockRadius = 20;
 canvas.width = cols * spacing;
 canvas.height = rows * spacing;
 
+// Directions for clock hands
+
+const directions ={
+    UP: -Math.PI / 2,
+    DOWN: Math.PI / 2,
+    LEFT: Math.PI,
+    RIGHT: 0,
+    DIAG1: -Math.PI / 4,
+    DIAG2: -3 * Math.PI / 4,
+    EMPTY: null
+};
+
+const digitPatterns = {
+    1: [
+      [null,             [directions.UP, directions.UP], null],
+      [null,             [directions.RIGHT, directions.RIGHT], null],
+      [null,             [directions.RIGHT, directions.RIGHT], null],
+      [null,             [directions.RIGHT, directions.RIGHT], null],
+      [null,             [directions.RIGHT, directions.RIGHT], null]
+    ],
+    // Add more digits here (0–9)
+  };
+  
+
 
 // Initialize grid of clocks
 let clocks = [];
@@ -70,4 +94,23 @@ function render() {
   requestAnimationFrame(render);
 }
 
+
+function renderDigit(digit, startRow, startCol) {
+    const pattern = digitPatterns[digit];
+    if (!pattern) return;
+  
+    for (let r = 0; r < pattern.length; r++) {
+      for (let c = 0; c < pattern[r].length; c++) {
+        const angles = pattern[r][c];
+        const clockIndex = (startRow + r) * cols + (startCol + c);
+        if (angles && clocks[clockIndex]) {
+          clocks[clockIndex].hourAngle = angles[0];
+          clocks[clockIndex].minuteAngle = angles[1];
+        }
+      }
+    }
+  }
+  
+
 render();
+renderDigit(1, 0, 0); // Example: render digit '1' at (0, 0)
