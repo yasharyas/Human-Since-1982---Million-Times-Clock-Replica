@@ -4,8 +4,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const { EnvironmentPlugin } = webpack;
-const isProduction = () => process.env.NODE_ENV === 'production';
 
+const isProduction = () => process.env.NODE_ENV === 'production';
 
 const plugins = [
     new CleanWebpackPlugin(['docs']),
@@ -18,7 +18,13 @@ const plugins = [
 ];
 
 if (isProduction()) {
-    plugins.push(new UglifyJSPlugin());
+    plugins.push(new UglifyJSPlugin({
+        uglifyOptions: {
+            output: {
+                comments: false // 👈 removes all comment banners
+            }
+        }
+    }));
 }
 
 module.exports = {
