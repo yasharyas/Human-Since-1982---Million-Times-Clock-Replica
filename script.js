@@ -1,212 +1,143 @@
-const canvas = document.getElementById('clockCanvas');
+// Create canvas element and append to document
+const canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
 const ctx = canvas.getContext('2d');
 
-const cols = 10;
-const rows = 6;
-const spacing = 70;
-const clockRadius = 25;
+// Set up full-screen canvas
+document.body.style.margin = '0';
+document.body.style.overflow = 'hidden';
+document.body.style.backgroundColor = '#000';
 
-const hourLength = clockRadius * 0.5;
-const minuteLength = clockRadius * 0.85;
+// Define grid layout
+const GRID_COLS = 12;
+const GRID_ROWS = 8;
+const TIME_MULTIPLIER = 10; // Speed up animation
 
-canvas.width = cols * spacing;
-canvas.height = rows * spacing;
-
-// Clock directions
-const directions = {
-  UP: -Math.PI / 2,
-  DOWN: Math.PI / 2,
-  LEFT: Math.PI,
-  RIGHT: 0,
-  DIAG1: -Math.PI / 4,
-  DIAG2: -3 * Math.PI / 4,
-  DIAG3: Math.PI / 4,
-  DIAG4: (3 * Math.PI) / 4,
-  EMPTY: null
-};
-
-// Digit patterns using 3x5 matrix (centered in 4x5 grid)
-const digitPatterns = {
-  0: [
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [[directions.LEFT, directions.DOWN], null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.LEFT, directions.UP], null, null, [directions.RIGHT, directions.UP]],
-    [[directions.LEFT, directions.DOWN], null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT], [directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT]]
-  ],
-  1: [
-    [null, [directions.DOWN, directions.DOWN], null, null],
-    [null, [directions.DOWN, directions.DOWN], null, null],
-    [null, [directions.DOWN, directions.DOWN], null, null],
-    [null, [directions.DOWN, directions.DOWN], null, null],
-    [null, [directions.DOWN, directions.DOWN], null, null]
-  ],
-  2: [
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [null, null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [[directions.LEFT, directions.DOWN], null, null, null],
-    [[directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT], [directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT]]
-  ],
-  3: [
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [null, null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [null, null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT], [directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT]]
-  ],
-  4: [
-    [[directions.LEFT, directions.DOWN], null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.LEFT, directions.UP], null, null, [directions.RIGHT, directions.UP]],
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [null, null, null, [directions.RIGHT, directions.DOWN]],
-    [null, null, null, [directions.RIGHT, directions.DOWN]]
-  ],
-  5: [
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [[directions.LEFT, directions.DOWN], null, null, null],
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [null, null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT], [directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT]]
-  ],
-  6: [
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [[directions.LEFT, directions.DOWN], null, null, null],
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [[directions.LEFT, directions.DOWN], null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT], [directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT]]
-  ],
-  7: [
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [null, null, null, [directions.RIGHT, directions.DOWN]],
-    [null, null, [directions.RIGHT, directions.DOWN], null],
-    [null, [directions.RIGHT, directions.DOWN], null, null],
-    [[directions.RIGHT, directions.DOWN], null, null, null]
-  ],
-  8: [
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [[directions.LEFT, directions.DOWN], null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [[directions.LEFT, directions.DOWN], null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT], [directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT]]
-  ],
-  9: [
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [[directions.LEFT, directions.DOWN], null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.UP, directions.RIGHT], [directions.UP, directions.LEFT], [directions.UP, directions.RIGHT], [directions.UP, directions.LEFT]],
-    [null, null, null, [directions.RIGHT, directions.DOWN]],
-    [[directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT], [directions.DOWN, directions.RIGHT], [directions.DOWN, directions.LEFT]]
-  ]
-};
-
-// Initialize grid of clocks
-let clocks = [];
-
-for (let row = 0; row < rows; row++) {
-  for (let col = 0; col < cols; col++) {
-    clocks.push({
-      x: col * spacing + spacing / 2,
-      y: row * spacing + spacing / 2,
-      hourAngle: Math.random() * 2 * Math.PI,
-      minuteAngle: Math.random() * 2 * Math.PI,
-      targetHour: null,
-      targetMinute: null,
-      fixed: false
-    });
-  }
+// Resize canvas to fill window
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 }
 
-function drawClock(ctx, x, y, radius, hourAngle, minuteAngle) {
-  ctx.save();
-  ctx.translate(x, y);
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-  ctx.beginPath();
-  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
-  ctx.strokeStyle = '#aaa';
-  ctx.lineWidth = 2;
-  ctx.stroke();
+// Draw a clock face and hands
+function drawClock(x, y, radius, time) {
+    ctx.save();
+    ctx.translate(x, y);
+    
+    // Clock face
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fill();
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = radius * 0.02;
+    ctx.stroke();
+    
+    // Hour marks
+    for (let i = 0; i < 12; i++) {
+        const angle = i * Math.PI / 6;
+        ctx.save();
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.moveTo(0, -radius * 0.8);
+        ctx.lineTo(0, -radius * 0.9);
+        ctx.lineWidth = radius * 0.03;
+        ctx.strokeStyle = '#333';
+        ctx.stroke();
+        ctx.restore();
+    }
 
-  if (hourAngle !== null) {
+    // Calculate hand angles
+    const hours = time.getHours() % 12;
+    const minutes = time.getMinutes();
+    const seconds = time.getSeconds();
+    const ms = time.getMilliseconds();
+    
+    const hourAngle = (hours * Math.PI / 6) + 
+                                     (minutes * Math.PI / (6 * 60)) + 
+                                     (seconds * Math.PI / (360 * 60));
+    const minuteAngle = (minutes * Math.PI / 30) + 
+                                         (seconds * Math.PI / (30 * 60)) + 
+                                         (ms * Math.PI / (30 * 60 * 1000));
+    const secondAngle = (seconds * Math.PI / 30) + 
+                                         (ms * Math.PI / (30 * 1000));
+
+    // Hour hand
     ctx.save();
     ctx.rotate(hourAngle);
     ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(0, -hourLength);
-    ctx.strokeStyle = '#00f6ff';
-    ctx.lineWidth = 3;
-    ctx.stroke();
+    ctx.moveTo(-radius * 0.05, 0);
+    ctx.lineTo(0, -radius * 0.5);
+    ctx.lineTo(radius * 0.05, 0);
+    ctx.fillStyle = '#000';
+    ctx.fill();
     ctx.restore();
-  }
 
-  if (minuteAngle !== null) {
+    // Minute hand
     ctx.save();
     ctx.rotate(minuteAngle);
     ctx.beginPath();
+    ctx.moveTo(-radius * 0.04, 0);
+    ctx.lineTo(0, -radius * 0.75);
+    ctx.lineTo(radius * 0.04, 0);
+    ctx.fillStyle = '#000';
+    ctx.fill();
+    ctx.restore();
+
+    // Second hand
+    ctx.save();
+    ctx.rotate(secondAngle);
+    ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.lineTo(0, -minuteLength);
-    ctx.strokeStyle = '#00f6ff';
-    ctx.lineWidth = 3;
+    ctx.lineTo(0, -radius * 0.85);
+    ctx.strokeStyle = '#e00';
+    ctx.lineWidth = radius * 0.02;
     ctx.stroke();
     ctx.restore();
-  }
 
-  ctx.restore();
+    // Center dot
+    ctx.beginPath();
+    ctx.arc(0, 0, radius * 0.06, 0, Math.PI * 2);
+    ctx.fillStyle = '#e00';
+    ctx.fill();
+
+    ctx.restore();
 }
 
-function animateClocks() {
-  for (const clock of clocks) {
-    if (!clock.fixed) {
-      if (Math.random() < 0.01) {
-        clock.targetHour = Math.random() * 2 * Math.PI;
-        clock.targetMinute = Math.random() * 2 * Math.PI;
-      }
-
-      if (clock.targetHour !== null) {
-        clock.hourAngle += (clock.targetHour - clock.hourAngle) * 0.1;
-        if (Math.abs(clock.hourAngle - clock.targetHour) < 0.01) {
-          clock.targetHour = null;
+// Animation loop
+function updateClocks() {
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Get current time
+    const now = new Date();
+    
+    // Create accelerated time for animation
+    const fastTime = new Date(now);
+    // Multiply seconds part for smoother animation
+    fastTime.setSeconds(now.getSeconds() * TIME_MULTIPLIER);
+    fastTime.setMilliseconds(now.getMilliseconds() * TIME_MULTIPLIER);
+    
+    // Calculate clock dimensions
+    const clockWidth = canvas.width / GRID_COLS;
+    const clockHeight = canvas.height / GRID_ROWS;
+    const clockSize = Math.min(clockWidth, clockHeight);
+    const radius = clockSize * 0.4;
+    
+    // Draw grid of clocks
+    for (let row = 0; row < GRID_ROWS; row++) {
+        for (let col = 0; col < GRID_COLS; col++) {
+            const x = (col + 0.5) * clockWidth;
+            const y = (row + 0.5) * clockHeight;
+            drawClock(x, y, radius, fastTime);
         }
-      }
-
-      if (clock.targetMinute !== null) {
-        clock.minuteAngle += (clock.targetMinute - clock.minuteAngle) * 0.1;
-        if (Math.abs(clock.minuteAngle - clock.targetMinute) < 0.01) {
-          clock.targetMinute = null;
-        }
-      }
     }
-  }
+    
+    requestAnimationFrame(updateClocks);
 }
 
-function render() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  animateClocks();
-  for (const clock of clocks) {
-    drawClock(ctx, clock.x, clock.y, clockRadius, clock.hourAngle, clock.minuteAngle);
-  }
-  requestAnimationFrame(render);
-}
-
-function renderDigit(digit, startRow, startCol) {
-  const pattern = digitPatterns[digit];
-  if (!pattern) return;
-
-  for (let r = 0; r < pattern.length; r++) {
-    for (let c = 0; c < pattern[r].length; c++) {
-      const angles = pattern[r][c];
-      const clockIndex = (startRow + r) * cols + (startCol + c);
-      if (clocks[clockIndex] && angles) {
-        clocks[clockIndex].hourAngle = angles[0];
-        clocks[clockIndex].minuteAngle = angles[1];
-        clocks[clockIndex].fixed = true;
-      }
-    }
-  }
-}
-
-// Example: show digits
-renderDigit(1, 0, 0);
-renderDigit(2, 0, 5);
-renderDigit(3, 0, 8);
-
-render(); // Start animation loop
+// Start animation
+updateClocks();

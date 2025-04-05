@@ -6,10 +6,3 @@ body {
     align-items: center;
     height: 100vh;
   }
-  
-  canvas {
-    background-color: #1e1e1e;
-    box-shadow: 0 0 20px #00f6ff44;
-    border-radius: 10px;
-  }
-  
