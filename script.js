@@ -37,18 +37,7 @@ function drawClock(x, y, radius, time) {
     ctx.stroke();
     
     // Hour marks
-    for (let i = 0; i < 12; i++) {
-        const angle = i * Math.PI / 6;
-        ctx.save();
-        ctx.rotate(angle);
-        ctx.beginPath();
-        ctx.moveTo(0, -radius * 0.8);
-        ctx.lineTo(0, -radius * 0.9);
-        ctx.lineWidth = radius * 0.03;
-        ctx.strokeStyle = '#333';
-        ctx.stroke();
-        ctx.restore();
-    }
+    
 
     // Calculate hand angles
     const hours = time.getHours() % 12;
