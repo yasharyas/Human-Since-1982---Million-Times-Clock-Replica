@@ -58,39 +58,22 @@ function drawClock(x, y, radius, time) {
                         (seconds * Math.PI / (30 * 60)) + 
                         (ms * Math.PI / (30 * 60 * 1000));
 
-    // Hour hand
+    // Hour hand (rectangular needle, same size as minute hand)
     ctx.save();
     ctx.rotate(hourAngle);
-    ctx.beginPath();
-    ctx.moveTo(-radius * 0.05, 0);
-    ctx.lineTo(0, -radius * 0.5);
-    ctx.lineTo(radius * 0.05, 0);
     ctx.fillStyle = '#000';
-    ctx.fill();
+    ctx.fillRect(-radius * 0.02, -radius * 0.75, radius * 0.04, radius * 0.75); // Rectangular hand
     ctx.restore();
 
-    // Minute hand
+    // Minute hand (rectangular needle, same size as hour hand)
     ctx.save();
     ctx.rotate(minuteAngle);
-    ctx.beginPath();
-    ctx.moveTo(-radius * 0.04, 0);
-    ctx.lineTo(0, -radius * 0.75);
-    ctx.lineTo(radius * 0.04, 0);
     ctx.fillStyle = '#000';
-    ctx.fill();
+    ctx.fillRect(-radius * 0.02, -radius * 0.75, radius * 0.04, radius * 0.75); // Rectangular hand
     ctx.restore();
-
-    // Removed seconds hand
-
-    // Center dot
-    ctx.beginPath();
-    ctx.arc(0, 0, radius * 0.06, 0, Math.PI * 2);
-    ctx.fillStyle = '#e00';
-    ctx.fill();
 
     ctx.restore();
 }
-
 
 // Animation loop
 function updateClocks() {
