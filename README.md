@@ -22,7 +22,7 @@ Runs locally at: `http://localhost:8080/`
 Clone the repository or copy the files into your project directory.
 
 ```bash
-git clone https://github.com/your-username/a-million-times-clone.git
+git clone https://github.com/yasharyas/a-million-times-clone.git
 cd a-million-times-clone
 npm install
 ```
