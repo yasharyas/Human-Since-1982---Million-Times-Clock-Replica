@@ -2,7 +2,7 @@ import createApp from './createApp';
 import createVelocities from './util/createVelocities';
 
 import createMagnet from './formations/createMagnet';
-import createLines from './formations/createLines';
+import createLines from './formations/createlines';
 import createTime from './formations/createTime';
 
 import createVelocityWave2 from './runners/createVelocityWave2';
@@ -40,6 +40,11 @@ const runners = [
 ];
 
 const root = document.querySelector('.clock');
+
+while (root.firstChild) {
+    root.removeChild(root.firstChild);
+}
+
 
 createApp(root, {
     columns,
