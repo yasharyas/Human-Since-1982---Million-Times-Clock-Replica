@@ -11,7 +11,12 @@ document.body.style.backgroundColor = '#000';
 // Define grid layout
 const GRID_COLS = 12;
 const GRID_ROWS = 8;
-const TIME_MULTIPLIER = 10; // Speed up animation
+const TIME_MULTIPLIER = 1000; // Speed up animation
+
+// Initialize custom start time
+let customTime = new Date();
+customTime.setHours(12, 0, 0, 0); // Set to 12:00:00 initially
+
 
 // Resize canvas to fill window
 function resizeCanvas() {
@@ -23,6 +28,8 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 // Draw a clock face and hands
+
+
 function drawClock(x, y, radius, time) {
     ctx.save();
     ctx.translate(x, y);
@@ -36,8 +43,7 @@ function drawClock(x, y, radius, time) {
     ctx.lineWidth = radius * 0.02;
     ctx.stroke();
     
-    // Hour marks
-    
+    // Remove hour marks (if any)
 
     // Calculate hand angles
     const hours = time.getHours() % 12;
@@ -46,13 +52,11 @@ function drawClock(x, y, radius, time) {
     const ms = time.getMilliseconds();
     
     const hourAngle = (hours * Math.PI / 6) + 
-                                     (minutes * Math.PI / (6 * 60)) + 
-                                     (seconds * Math.PI / (360 * 60));
+                      (minutes * Math.PI / (6 * 60)) + 
+                      (seconds * Math.PI / (360 * 60));
     const minuteAngle = (minutes * Math.PI / 30) + 
-                                         (seconds * Math.PI / (30 * 60)) + 
-                                         (ms * Math.PI / (30 * 60 * 1000));
-    const secondAngle = (seconds * Math.PI / 30) + 
-                                         (ms * Math.PI / (30 * 1000));
+                        (seconds * Math.PI / (30 * 60)) + 
+                        (ms * Math.PI / (30 * 60 * 1000));
 
     // Hour hand
     ctx.save();
@@ -76,16 +80,7 @@ function drawClock(x, y, radius, time) {
     ctx.fill();
     ctx.restore();
 
-    // Second hand
-    ctx.save();
-    ctx.rotate(secondAngle);
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(0, -radius * 0.85);
-    ctx.strokeStyle = '#e00';
-    ctx.lineWidth = radius * 0.02;
-    ctx.stroke();
-    ctx.restore();
+    // Removed seconds hand
 
     // Center dot
     ctx.beginPath();
@@ -96,20 +91,15 @@ function drawClock(x, y, radius, time) {
     ctx.restore();
 }
 
+
 // Animation loop
 function updateClocks() {
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Get current time
-    const now = new Date();
-    
-    // Create accelerated time for animation
-    const fastTime = new Date(now);
-    // Multiply seconds part for smoother animation
-    fastTime.setSeconds(now.getSeconds() * TIME_MULTIPLIER);
-    fastTime.setMilliseconds(now.getMilliseconds() * TIME_MULTIPLIER);
-    
+    // Increment custom time
+    customTime = new Date(customTime.getTime() + TIME_MULTIPLIER);
+
     // Calculate clock dimensions
     const clockWidth = canvas.width / GRID_COLS;
     const clockHeight = canvas.height / GRID_ROWS;
@@ -121,7 +111,7 @@ function updateClocks() {
         for (let col = 0; col < GRID_COLS; col++) {
             const x = (col + 0.5) * clockWidth;
             const y = (row + 0.5) * clockHeight;
-            drawClock(x, y, radius, fastTime);
+            drawClock(x, y, radius, customTime);
         }
     }
     
