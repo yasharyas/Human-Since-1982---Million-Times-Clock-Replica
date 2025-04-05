@@ -6,12 +6,12 @@ const ctx = canvas.getContext('2d');
 // Set up full-screen canvas
 document.body.style.margin = '0';
 document.body.style.overflow = 'hidden';
-document.body.style.backgroundColor = '#000';
+document.body.style.backgroundColor = '#ffffff';
 
 // Define grid layout
-const GRID_COLS = 12;
-const GRID_ROWS = 8;
-const TIME_MULTIPLIER = 1000; // Speed up animation
+const GRID_COLS = 24;
+const GRID_ROWS = 12;
+const TIME_MULTIPLIER = 1550; // Speed up animation
 
 // Initialize custom start time
 let customTime = new Date();
@@ -37,7 +37,7 @@ function drawClock(x, y, radius, time) {
     // Clock face
     ctx.beginPath();
     ctx.arc(0, 0, radius, 0, Math.PI * 2);
-    ctx.fillStyle = '#f0f0f0';
+    ctx.fillStyle = '#dedddc';
     ctx.fill();
     ctx.strokeStyle = '#333';
     ctx.lineWidth = radius * 0.02;
