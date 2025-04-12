@@ -14,6 +14,9 @@ This is a web based implementation of the **[A Million Times](https://www.humans
 
 
 **[Project Demo](https://yasharyas.github.io/Human-Since-1982---Million-Times-Clock-Replica/)**
+
+![Demo](https://drive.google.com/uc?export=view&id=1QuCSisvW5GHCj4Gsd3KmUSo1WdVBi1AO)
+
   
 Runs locally at: `http://localhost:8080/`
 
